@@ -1,0 +1,33 @@
+﻿<Page
+    x:Class="Lab.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Lab"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="using:Lab.ViewModels" Background="Transparent"
+    mc:Ignorable="d">
+
+    <Grid
+        Background="Transparent">
+        <CaptureElement
+            x:Name="CaptureElement"
+            Source="{x:Bind VM.MediaCapture, Mode=OneWay}"></CaptureElement>
+        <ListView ItemsSource="{x:Bind VM.DevicePreviews, Mode=OneWay}" MinWidth="250" Margin="5" x:Name="VideoSources"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="AntiqueWhite"
+                  Opacity="50">
+            <ListView.ItemTemplate>
+                <DataTemplate
+                    x:DataType="viewModels:DevicePreviewViewModel">
+                    <Button
+                        Command="{Binding SelectVideoSourceCommand, Mode=OneWay}" CommandParameter="{Binding Mode=OneWay}">
+                    <TextBlock
+                        Text="{x:Bind Device, Mode=OneWay}" />
+                    </Button>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>
