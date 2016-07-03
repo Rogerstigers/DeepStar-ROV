@@ -1,27 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Devices.Enumeration;
+using Windows.Devices.SerialCommunication;
+using System.Threading.Tasks;
 
 namespace Lab.Models
 {
-    public class DeviceManager
+    public static class DeviceManager
     {
-        public List<DevicePreview> DevicePreviews { get; set; } = new List<DevicePreview>();
-
-        public DeviceManager() {
-            LoadDevicePreviews();
-        }
-
-        private async void LoadDevicePreviews()
+        public static async Task<List<Device>> LoadSerialDevices()
         {
-            var vcd = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
+            List<Device> SerialDevices = new List<Device>();
+            string aqs = SerialDevice.GetDeviceSelector();
+            var devices = await DeviceInformation.FindAllAsync(aqs);
 
-            foreach (var item in vcd)
+            foreach (var item in devices)
             {
-                var dp = new DevicePreview { Device = item.Name, DeviceId = item.Id };
-                DevicePreviews.Add(dp);
+                var dp = new Device { Name = item.Name, DeviceId = item.Id };
+                SerialDevices.Add(dp);
             }
+
+            return SerialDevices;
         }
+
+        public static async Task<List<Device>> LoadVideoCaptureDevices()
+        {
+            List<Device> VideoCaptureDevices = new List<Device>();
+            var devices = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
+
+            foreach (var item in devices)
+            {
+                var dp = new Device { Name = item.Name, DeviceId = item.Id };
+                VideoCaptureDevices.Add(dp);
+            }
+
+            return VideoCaptureDevices;
+        }
+
 
     }
 

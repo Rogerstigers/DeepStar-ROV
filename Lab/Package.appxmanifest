@@ -26,10 +26,10 @@
     <Capability Name="internetClient" />
     <DeviceCapability Name="webcam" />
     <DeviceCapability Name="microphone" />
-    <!--<DeviceCapability Name="usb">
-      <Device Id="vidpid:05E1 0408">
-        <Function Type="classId:" />
+    <DeviceCapability Name="serialcommunication">
+      <Device Id="any">
+        <Function Type="name:serialPort" />
       </Device>
-    </DeviceCapability>-->
+    </DeviceCapability>
   </Capabilities>
 </Package>

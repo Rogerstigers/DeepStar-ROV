@@ -98,10 +98,12 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\Commands.cs" />
     <Compile Include="Models\DeviceManager.cs" />
-    <Compile Include="Models\DevicePreview.cs" />
+    <Compile Include="Models\Device.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\DevicePreviewViewModel.cs" />
+    <Compile Include="ViewModels\SerialDeviceViewModel.cs" />
+    <Compile Include="ViewModels\VideoCaptureDeviceViewModel.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\ViewModelHelpers.cs" />
   </ItemGroup>

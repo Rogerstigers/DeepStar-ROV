@@ -2,19 +2,19 @@
 
 namespace Lab.Models
 {
-    public class DevicePreview : INotifyPropertyChanged
+    public class Device : INotifyPropertyChanged
     {
-        public DevicePreview() { }
+        public Device() { }
         
         private string device;
 
-        public string Device
+        public string Name
         {
             get { return device; }
             set
             {
                 device = value;
-                OnPropertyChanged("Device");
+                OnPropertyChanged("Name");
             }
         }
 
