@@ -31,5 +31,6 @@ namespace Lab.ViewModels
             get { return This.DeviceId; }
             set { SetProperty(This.DeviceId, value, () => this.DeviceId = value); }
         }
+
     }
 }
