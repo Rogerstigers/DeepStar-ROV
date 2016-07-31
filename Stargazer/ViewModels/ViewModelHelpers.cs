@@ -2,12 +2,24 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Windows.Storage;
 
 namespace Lab.ViewModels
 {
     public class NotificationBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        protected ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+
+        // SetField (Name, value); // where there is a data member
+        protected bool SetLocalSettingProperty<T>(string settingName, T value, [CallerMemberName] string property = null)
+        {
+            var field = (T)localSettings.Values[settingName];
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            RaisePropertyChanged(property);
+            return true;
+        }
 
         // SetField (Name, value); // where there is a data member
         protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string property = null)

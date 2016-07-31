@@ -23,7 +23,6 @@ namespace Lab.ViewModels
             foreach (var device in await DeviceManager.LoadVideoCaptureDevices())
             {
                 var vidDevice = new VideoCaptureDeviceViewModel(this, device);
-                vidDevice.SetMediaCapture();
                 VideoCaptureDevices.Add(vidDevice);
 
             }
@@ -213,11 +212,6 @@ namespace Lab.ViewModels
         #region Video Capture
         private async void SetMediaCapture()
         {
-            foreach (var vidCapture in VideoCaptureDevices)
-            {
-                vidCapture.StopMediaCapture();
-            }
-
             if (MediaCapture != null)
             {
                 await MediaCapture.StopPreviewAsync();
