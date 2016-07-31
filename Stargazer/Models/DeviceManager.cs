@@ -4,7 +4,7 @@ using Windows.Devices.Enumeration;
 using Windows.Devices.SerialCommunication;
 using System.Threading.Tasks;
 
-namespace Lab.Models
+namespace Stargazer.Models
 {
     public static class DeviceManager
     {

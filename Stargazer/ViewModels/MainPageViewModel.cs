@@ -1,4 +1,4 @@
-﻿using Lab.Models;
+﻿using Stargazer.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,10 +7,15 @@ using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.SerialCommunication;
 using Windows.Media.Capture;
+using Windows.Media.Core;
 using Windows.Media.MediaProperties;
+using Windows.Media.Playback;
+using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
-namespace Lab.ViewModels
+namespace Stargazer.ViewModels
 {
     public class MainPageViewModel : NotificationBase
     {
@@ -252,6 +257,58 @@ namespace Lab.ViewModels
             get { return _MediaCapture; }
             set { SetProperty(ref _MediaCapture, value); }
         }
+        #endregion
+
+        #region Video Playback
+
+
+        string _SelectedVideoUrl;
+        public string SelectedVideoUrl
+        {
+            get { return _SelectedVideoUrl; }
+            set
+            {
+                SetProperty(ref _SelectedVideoUrl, value);
+            }
+        }
+
+        internal async Task LoadSelectedVideo(string value)
+        {
+            var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
+            filePicker.FileTypeFilter.Add(".mp4");
+            filePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.VideosLibrary;
+            StorageFile file = await filePicker.PickSingleFileAsync();
+
+            if (file != null)
+            {
+                var mediaSource = MediaSource.CreateFromStorageFile(file);
+                
+                SelectedVideo = new MediaElement { AutoPlay = false };
+                SelectedVideo.MediaOpened += delegate (System.Object sender, RoutedEventArgs e) {
+                    SelectedVideo.Play();
+                };
+                SelectedVideo.SetPlaybackSource(mediaSource);
+            }
+        }
+
+        public MediaElement _SelectedVideo;
+        public MediaElement SelectedVideo
+        {
+            get { return _SelectedVideo; }
+            set { SetProperty(ref _SelectedVideo, value); }
+        }
+
+        private SelectVideoPlaybackCommand _SelectVideoPlaybackSource;
+        public SelectVideoPlaybackCommand SelectVideoPlaybackSource
+        {
+            get
+            {
+                if (_SelectVideoPlaybackSource == null)
+                    _SelectVideoPlaybackSource = new SelectVideoPlaybackCommand(this);
+                return _SelectVideoPlaybackSource;
+            }
+        }
+
         #endregion
     }
 }

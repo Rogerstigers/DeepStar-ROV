@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Lab.Models
+namespace Stargazer.Models
 {
     public class Device : INotifyPropertyChanged
     {

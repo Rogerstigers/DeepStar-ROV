@@ -2,12 +2,52 @@
     x:Class="Stargazer.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Stargazer"
+    xmlns:Stargazer="using:Stargazer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.TopAppBar>
+        <CommandBar
+            ClosedDisplayMode="Minimal">
+            <CommandBar.Content>
+                <Grid />
+            </CommandBar.Content>
+            <AppBarButton
+                Icon="Setting"
+                Label="Settings" />
+            <AppBarSeparator />
+            <AppBarButton
+                Label="Toggle Recording"
+                Icon="Video" />
+            <AppBarButton
+                Icon="Repair"
+                Label="Motor Test" />
+        </CommandBar>
+    </Page.TopAppBar>
+    <Page.BottomAppBar>
+        <CommandBar
+            ClosedDisplayMode="Minimal">
+            <CommandBar.Content>
+                <Grid />
+            </CommandBar.Content>
+            <AppBarButton
+                Icon="Accept"
+                Label="appbarbutton" />
+            <AppBarButton
+                Icon="Cancel"
+                Label="appbarbutton" />
+        </CommandBar>
+    </Page.BottomAppBar>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Grid
+        Background="Black">
+        <CaptureElement
+            Source="{x:Bind VM.MediaCapture, Mode=OneWay}"></CaptureElement>
+        <ContentControl
+            Content="{x:Bind VM.SelectedVideo, Mode=OneWay}"></ContentControl>
+        <Stargazer:DPad
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,50,50" />
     </Grid>
 </Page>

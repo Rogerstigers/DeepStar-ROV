@@ -1,10 +1,10 @@
-﻿using Lab.Models;
+﻿using Stargazer.Models;
 using System;
 using System.Linq;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 
-namespace Lab.ViewModels
+namespace Stargazer.ViewModels
 {
     public class VideoCaptureDeviceViewModel : NotificationBase<Device>
     {

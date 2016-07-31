@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stargazer.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +25,15 @@ namespace Stargazer
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            VM = new MainPageViewModel();
+        }
+
+        public MainPageViewModel VM { get; set; }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

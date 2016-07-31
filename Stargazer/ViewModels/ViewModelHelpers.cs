@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.Storage;
 
-namespace Lab.ViewModels
+namespace Stargazer.ViewModels
 {
     public class NotificationBase : INotifyPropertyChanged
     {

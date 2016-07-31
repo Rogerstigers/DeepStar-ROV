@@ -1,6 +1,6 @@
-﻿using Lab.Models;
+﻿using Stargazer.Models;
 
-namespace Lab.ViewModels
+namespace Stargazer.ViewModels
 {
     public class SerialDeviceViewModel : NotificationBase<Device>
     {
