@@ -23,19 +23,18 @@ namespace Stargazer.ViewModels
         {
         }
 
-        public async Task LoadDevices()
+        private bool LightOn = false;
+        internal async Task ToggleLight()
         {
-            foreach (var device in await DeviceManager.LoadVideoCaptureDevices())
-            {
-                var vidDevice = new VideoCaptureDeviceViewModel(this, device);
-                VideoCaptureDevices.Add(vidDevice);
+            if (LightOn)
+                await LEDOff();
+            else
+                await LEDOn();
+        }
 
-            }
-
-            foreach (var device in await DeviceManager.LoadSerialDevices())
-            {
-                SerialDevices.Add(new SerialDeviceViewModel(this, device));
-            }
+        public async Task Initialize() {
+            if (CameraId != null) await SetMediaCapture();
+            if (ControllerId != null) await InitializeComms();
         }
 
         ObservableCollection<VideoCaptureDeviceViewModel> _VideoCaptureDevices = new ObservableCollection<VideoCaptureDeviceViewModel>();
@@ -51,74 +50,127 @@ namespace Stargazer.ViewModels
             get { return _SerialDevices; }
             set { SetProperty(ref _SerialDevices, value); }
         }
-
-        VideoCaptureDeviceViewModel _SelectedCaptureDevice;
-        public VideoCaptureDeviceViewModel SelectedCaptureDevice
+        
+        public string CameraId
         {
-            get { return _SelectedCaptureDevice; }
-            set
+            get { return localSettings.Values["CameraId"] as string; }
+        }
+
+        public string ControllerId
+        {
+            get { return localSettings.Values["ControllerId"] as string; }
+        }
+
+        ToggleLightCommand _ToggleLightCommand;
+        public ToggleLightCommand ToggleLightCommand
+        {
+            get
             {
-                SetProperty(ref _SelectedCaptureDevice, value);
-                SetMediaCapture();
+                if (_ToggleLightCommand == null) _ToggleLightCommand = new ToggleLightCommand(this);
+                return _ToggleLightCommand;
             }
         }
 
-        SerialDeviceViewModel _SelectedSerialDevice;
-        public SerialDeviceViewModel SelectedSerialDevice
+        DPadButtonPressedCommand _DirectionalButtonPressed;
+        public DPadButtonPressedCommand DirectionalButtonPressed
         {
-            get { return _SelectedSerialDevice; }
-            set
+            get
             {
-                SetProperty(ref _SelectedSerialDevice, value);
-                InitializeComms();
+                if (_DirectionalButtonPressed == null) _DirectionalButtonPressed = new DPadButtonPressedCommand(this);
+                return _DirectionalButtonPressed;
             }
+        }
+
+        DPadButtonReleasedCommand _DirectionalButtonReleased;
+        public DPadButtonReleasedCommand DirectionalButtonReleased
+        {
+            get
+            {
+                if (_DirectionalButtonReleased == null) _DirectionalButtonReleased = new DPadButtonReleasedCommand(this);
+                return _DirectionalButtonReleased;
+            }
+        }
+
+        internal async Task Engage(string direction)
+        {
+            var d = direction.ToLower();
+            await AllStop();
+            switch (d)
+            {
+                case "left":
+                    await Port();
+                    break;
+                case "right":
+                    await Starboard();
+                    break;
+                case "top":
+                    await Ahead();
+                    break;
+                case "bottom":
+                    await Astern();
+                    break;
+                case "up":
+                    await Ascend();
+                    break;
+                case "down":
+                    await Dive();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        internal async Task Disengage() {
+            await AllStop();
         }
 
         #region ROV Commands
 
-        internal async void AllStop()
+        internal async Task AllStop()
         {
-            Write("<ALLSTOP>");
+            await Write("<ALLSTOP>");
         }
 
-        internal async void Ahead()
+        internal async Task Ahead()
         {
-            Write("<AHEAD>");
+            await Write("<AHEAD>");
         }
 
-        internal async void Astern()
+        internal async Task Astern()
         {
-            Write("<ASTEARN>");
+            await Write("<ASTEARN>");
         }
 
-        internal async void Port()
+        internal async Task Port()
         {
-            Write("<PORT>");
+            await Write("<PORT>");
         }
 
-        internal async void Starboard()
+        internal async Task Starboard()
         {
-            Write("<STARBOARD>");
+            await Write("<STARBOARD>");
         }
 
-        internal async void Ascend()
+        internal async Task Ascend()
         {
-            Write("<ASCEND>");
+            await Write("<ASCEND>");
         }
 
-        internal async void Dive()
+        internal async Task Dive()
         {
-            Write("<DIVE>");
+            await Write("<DIVE>");
         }
 
-        internal async void LEDOn()
+        internal async Task LEDOn()
         {
-            Write("<LEDON>");
+            await Write("<LEDON>");
+            LightOn = true;
         }
 
-        internal async void LEDOff()
+        internal async Task LEDOff()
         {
-            Write("<LEDOFF>");
+            await Write("<LEDOFF>");
+            LightOn = false;
         }
 
 
@@ -128,13 +180,13 @@ namespace Stargazer.ViewModels
 
         private SerialDevice device = null;
 
-        private async void InitializeComms()
+        private async Task InitializeComms()
         {
             if (device != null) device.Dispose();
 
-            device = await SerialDevice.FromIdAsync(SelectedSerialDevice.DeviceId);
+            device = await SerialDevice.FromIdAsync(ControllerId);
             if (device != null)
-            {
+            {                
                 device.WriteTimeout = TimeSpan.FromMilliseconds(500);
                 device.ReadTimeout = TimeSpan.FromMilliseconds(500);
                 device.BaudRate = 9600;
@@ -143,11 +195,10 @@ namespace Stargazer.ViewModels
                 device.DataBits = 8;
 
                 Listen();
-
             }
             else
             {
-                DeviceInformation d = await DeviceInformation.CreateFromIdAsync(SelectedSerialDevice.DeviceId);
+                DeviceInformation d = await DeviceInformation.CreateFromIdAsync(ControllerId);
                 var status = d.IsEnabled;
             }
         }
@@ -215,7 +266,7 @@ namespace Stargazer.ViewModels
         #endregion
 
         #region Video Capture
-        private async void SetMediaCapture()
+        private async Task SetMediaCapture()
         {
             if (MediaCapture != null)
             {
@@ -226,7 +277,7 @@ namespace Stargazer.ViewModels
             // Create MediaCapture and its settings
             var _mediaCapture = new MediaCapture();
 
-            var mediaInitSettings = new MediaCaptureInitializationSettings { VideoDeviceId = SelectedCaptureDevice.DeviceId, StreamingCaptureMode = StreamingCaptureMode.Video, MediaCategory = MediaCategory.Media };
+            var mediaInitSettings = new MediaCaptureInitializationSettings { VideoDeviceId = CameraId, StreamingCaptureMode = StreamingCaptureMode.Video, MediaCategory = MediaCategory.Media };
 
             // Initialize MediaCapture
             try
@@ -248,7 +299,14 @@ namespace Stargazer.ViewModels
 
             await _mediaCapture.VideoDeviceController.SetMediaStreamPropertiesAsync(MediaStreamType.VideoPreview, maxRes);
             MediaCapture = _mediaCapture;
-            await _mediaCapture.StartPreviewAsync();
+
+            try
+            {
+                await _mediaCapture.StartPreviewAsync();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         MediaCapture _MediaCapture;
@@ -282,16 +340,41 @@ namespace Stargazer.ViewModels
             if (file != null)
             {
                 var mediaSource = MediaSource.CreateFromStorageFile(file);
-                
+
                 SelectedVideo = new MediaElement { AutoPlay = false };
-                SelectedVideo.MediaOpened += delegate (System.Object sender, RoutedEventArgs e) {
+                SelectedVideo.MediaOpened += delegate (System.Object sender, RoutedEventArgs e)
+                {
                     SelectedVideo.Play();
                 };
                 SelectedVideo.SetPlaybackSource(mediaSource);
             }
         }
 
-        public MediaElement _SelectedVideo;
+        internal async Task ShowSettingsScreen()
+        {
+            if (MediaCapture != null)
+            {
+                MediaCapture.Dispose();
+                MediaCapture = null;
+            }
+
+            var sVM = new SettingsViewModel(this);
+            var settings = new ApplicationSettings(sVM);
+            await settings.ShowAsync();
+            await Initialize();
+        }
+
+        ShowSettingsCommand _ShowSettingsScreen;
+        public ShowSettingsCommand ShowSettingsScreenCommand
+        {
+            get
+            {
+                if (_ShowSettingsScreen == null) _ShowSettingsScreen = new ShowSettingsCommand(this);
+                return _ShowSettingsScreen;
+            }
+        }
+
+        private MediaElement _SelectedVideo;
         public MediaElement SelectedVideo
         {
             get { return _SelectedVideo; }
@@ -308,6 +391,9 @@ namespace Stargazer.ViewModels
                 return _SelectVideoPlaybackSource;
             }
         }
+
+        public bool HasActiveController { get { return device != null; } }
+        public bool Recording { get; internal set; }
 
         #endregion
     }

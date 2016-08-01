@@ -27,6 +27,7 @@ namespace Stargazer
         {
             InitializeComponent();
             VM = new MainPageViewModel();
+            VM.Initialize();
         }
 
         public MainPageViewModel VM { get; set; }

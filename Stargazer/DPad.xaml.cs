@@ -24,6 +24,14 @@ namespace Stargazer
         public DPad()
         {
             this.InitializeComponent();
+            LeftButton.AddHandler(PointerPressedEvent, new PointerEventHandler(LeftButton_PointerPressed), true);
+            LeftButton.AddHandler(PointerReleasedEvent, new PointerEventHandler(LeftButton_PointerReleased), true);
+            RightButton.AddHandler(PointerPressedEvent, new PointerEventHandler(RightButton_PointerPressed), true);
+            RightButton.AddHandler(PointerReleasedEvent, new PointerEventHandler(RightButton_PointerReleased), true);
+            TopButton.AddHandler(PointerPressedEvent, new PointerEventHandler(TopButton_PointerPressed), true);
+            TopButton.AddHandler(PointerReleasedEvent, new PointerEventHandler(TopButton_PointerReleased), true);
+            BottomButton.AddHandler(PointerPressedEvent, new PointerEventHandler(BottomButton_PointerPressed), true);
+            BottomButton.AddHandler(PointerReleasedEvent, new PointerEventHandler(BottomButton_PointerReleased), true);
         }
 
         public ICommand ButtonPressed
@@ -133,6 +141,11 @@ namespace Stargazer
                 }
             }
 
+        }
+
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            string s = "";
         }
     }
 }

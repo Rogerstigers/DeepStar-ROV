@@ -6,14 +6,6 @@ namespace Stargazer.ViewModels
     {
         public SerialDeviceViewModel(MainPageViewModel parent, Device dp = null) : base(dp)
         {
-            SelectSerialDeviceCommand = new SelectSerialDeviceCommand(parent);
-        }
-
-        SelectSerialDeviceCommand _SelectSerialDeviceCommand;
-        public SelectSerialDeviceCommand SelectSerialDeviceCommand
-        {
-            get { return _SelectSerialDeviceCommand; }
-            set { SetProperty(ref _SelectSerialDeviceCommand, value); }
         }
 
         public string Name

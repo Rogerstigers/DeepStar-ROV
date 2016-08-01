@@ -16,7 +16,7 @@ namespace Stargazer.ViewModels
         {
             var field = (T)localSettings.Values[settingName];
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
+            localSettings.Values[settingName] = value;
             RaisePropertyChanged(property);
             return true;
         }

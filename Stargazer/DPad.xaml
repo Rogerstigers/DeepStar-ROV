@@ -189,29 +189,26 @@
         </Canvas>
 
         <Button
+            x:Name="RightButton"
             Canvas.Left="300"
             Canvas.Top="225"
-            Click="Button_Click"
-            PointerPressed="Button_PointerPressed"
-            PointerReleased="Button_PointerReleased"
             Template="{StaticResource RightDPadButtonOverlay}" />
 
         <Button
+            x:Name="TopButton"
             Canvas.Left="75"
             Canvas.Top="300"
-            Click="Button_Click"
             Template="{StaticResource TopDPadButtonOverlay}" />
 
         <Button
+            x:Name="BottomButton"
             Canvas.Left="225"
             Canvas.Top="0"
-            Click="Button_Click"
             Template="{StaticResource BottomDPadButtonOverlay}" />
         <Button
+            x:Name="LeftButton"
             Canvas.Left="0"
             Canvas.Top="75"
-            PointerPressed="LeftButton_PointerPressed"
-            PointerReleased="LeftButton_PointerReleased"
             Template="{StaticResource LeftDPadButtonOverlay}" />
 
     </Canvas>

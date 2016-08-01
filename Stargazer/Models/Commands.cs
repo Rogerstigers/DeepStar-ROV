@@ -4,11 +4,10 @@ using System.Windows.Input;
 
 namespace Stargazer.Models
 {
-
-    public class SelectVideoSourceCommand : ICommand
+    public class ToggleLightCommand : ICommand
     {
         private MainPageViewModel _parent;
-        public SelectVideoSourceCommand(MainPageViewModel parent)
+        public ToggleLightCommand(MainPageViewModel parent)
         {
             _parent = parent;
         }
@@ -20,17 +19,15 @@ namespace Stargazer.Models
             return true;
         }
 
-        public void Execute(object parameter)
+        public async void Execute(object parameter)
         {
-            var devicePreview = parameter as VideoCaptureDeviceViewModel;
-            if (devicePreview != null) _parent.SelectedCaptureDevice = devicePreview;
+            await _parent.ToggleLight();
         }
     }
-
-    public class SelectSerialDeviceCommand : ICommand
+    public class ShowSettingsCommand : ICommand
     {
         private MainPageViewModel _parent;
-        public SelectSerialDeviceCommand(MainPageViewModel parent)
+        public ShowSettingsCommand(MainPageViewModel parent)
         {
             _parent = parent;
         }
@@ -39,13 +36,12 @@ namespace Stargazer.Models
 
         public bool CanExecute(object parameter)
         {
-            return true;
+            return !_parent.Recording;
         }
 
-        public void Execute(object parameter)
+        public async void Execute(object parameter)
         {
-            var devicePreview = parameter as SerialDeviceViewModel;
-            if (devicePreview != null) _parent.SelectedSerialDevice = devicePreview;
+            await _parent.ShowSettingsScreen();
         }
     }
 
@@ -67,6 +63,48 @@ namespace Stargazer.Models
         public async void Execute(object parameter)
         {
             await _parent.LoadSelectedVideo(parameter.ToString());
+        }
+    }
+
+    public class DPadButtonPressedCommand: ICommand
+    {
+        private MainPageViewModel _parent;
+        public DPadButtonPressedCommand(MainPageViewModel parent)
+        {
+            _parent = parent;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return _parent.HasActiveController;
+        }
+
+        public async void Execute(object parameter)
+        {
+            await _parent.Engage(parameter as string);
+        }
+    }
+
+    public class DPadButtonReleasedCommand : ICommand
+    {
+        private MainPageViewModel _parent;
+        public DPadButtonReleasedCommand(MainPageViewModel parent)
+        {
+            _parent = parent;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public async void Execute(object parameter)
+        {
+            await _parent.Disengage();
         }
     }
 }

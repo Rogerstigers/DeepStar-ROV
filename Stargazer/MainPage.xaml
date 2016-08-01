@@ -14,7 +14,8 @@
             </CommandBar.Content>
             <AppBarButton
                 Icon="Setting"
-                Label="Settings" />
+                Label="Settings"
+                Command="{x:Bind VM.ShowSettingsScreenCommand}"/>
             <AppBarSeparator />
             <AppBarButton
                 Label="Toggle Recording"
@@ -22,6 +23,8 @@
             <AppBarButton
                 Icon="Repair"
                 Label="Motor Test" />
+            <AppBarSeparator />
+            <AppBarToggleButton Icon="SolidStar" Label="Light" Command="{x:Bind VM.ToggleLightCommand}" />
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
@@ -45,9 +48,17 @@
             Source="{x:Bind VM.MediaCapture, Mode=OneWay}"></CaptureElement>
         <ContentControl
             Content="{x:Bind VM.SelectedVideo, Mode=OneWay}"></ContentControl>
+        <Stargazer:UpDownToggle
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            ButtonPressed="{x:Bind VM.DirectionalButtonPressed}"
+            ButtonReleased="{x:Bind VM.DirectionalButtonReleased}"
+            Margin="50,0,0,350" />
         <Stargazer:DPad
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
+            ButtonPressed="{x:Bind VM.DirectionalButtonPressed}"
+            ButtonReleased="{x:Bind VM.DirectionalButtonReleased}"
             Margin="0,0,50,50" />
     </Grid>
 </Page>

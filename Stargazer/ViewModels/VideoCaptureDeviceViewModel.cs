@@ -10,14 +10,6 @@ namespace Stargazer.ViewModels
     {
         public VideoCaptureDeviceViewModel(MainPageViewModel parent, Device dp = null) : base(dp)
         {
-            SelectVideoSourceCommand = new SelectVideoSourceCommand(parent);
-        }
-
-        SelectVideoSourceCommand _SelectVideoSourceCommand;
-        public SelectVideoSourceCommand SelectVideoSourceCommand
-        {
-            get { return _SelectVideoSourceCommand; }
-            set { SetProperty(ref _SelectVideoSourceCommand, value); }
         }
 
         public string Name
