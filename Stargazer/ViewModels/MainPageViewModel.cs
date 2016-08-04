@@ -23,20 +23,13 @@ namespace Stargazer.ViewModels
         {
         }
 
-        private bool LightOn = false;
-        internal async Task ToggleLight()
+        public async Task Initialize()
         {
-            if (LightOn)
-                await LEDOff();
-            else
-                await LEDOn();
-        }
-
-        public async Task Initialize() {
             if (CameraId != null) await SetMediaCapture();
             if (ControllerId != null) await InitializeComms();
         }
 
+        #region Settings
         ObservableCollection<VideoCaptureDeviceViewModel> _VideoCaptureDevices = new ObservableCollection<VideoCaptureDeviceViewModel>();
         public ObservableCollection<VideoCaptureDeviceViewModel> VideoCaptureDevices
         {
@@ -50,7 +43,7 @@ namespace Stargazer.ViewModels
             get { return _SerialDevices; }
             set { SetProperty(ref _SerialDevices, value); }
         }
-        
+
         public string CameraId
         {
             get { return localSettings.Values["CameraId"] as string; }
@@ -61,6 +54,34 @@ namespace Stargazer.ViewModels
             get { return localSettings.Values["ControllerId"] as string; }
         }
 
+
+        internal async Task ShowSettingsScreen()
+        {
+            if (MediaCapture != null)
+            {
+                MediaCapture.Dispose();
+                MediaCapture = null;
+            }
+
+            var sVM = new SettingsViewModel(this);
+            var settings = new ApplicationSettings(sVM);
+            await settings.ShowAsync();
+            await Initialize();
+        }
+
+        ShowSettingsCommand _ShowSettingsScreen;
+        public ShowSettingsCommand ShowSettingsScreenCommand
+        {
+            get
+            {
+                if (_ShowSettingsScreen == null) _ShowSettingsScreen = new ShowSettingsCommand(this);
+                return _ShowSettingsScreen;
+            }
+        }
+
+        #endregion
+
+        #region ROV Control
         ToggleLightCommand _ToggleLightCommand;
         public ToggleLightCommand ToggleLightCommand
         {
@@ -89,6 +110,15 @@ namespace Stargazer.ViewModels
                 if (_DirectionalButtonReleased == null) _DirectionalButtonReleased = new DPadButtonReleasedCommand(this);
                 return _DirectionalButtonReleased;
             }
+        }
+
+        private bool LightOn = false;
+        internal async Task ToggleLight()
+        {
+            if (LightOn)
+                await LEDOff();
+            else
+                await LEDOn();
         }
 
         internal async Task Engage(string direction)
@@ -120,11 +150,10 @@ namespace Stargazer.ViewModels
             }
         }
 
-        internal async Task Disengage() {
+        internal async Task Disengage()
+        {
             await AllStop();
         }
-
-        #region ROV Commands
 
         internal async Task AllStop()
         {
@@ -172,8 +201,6 @@ namespace Stargazer.ViewModels
             await Write("<LEDOFF>");
             LightOn = false;
         }
-
-
         #endregion
 
         #region Serial Device
@@ -186,7 +213,7 @@ namespace Stargazer.ViewModels
 
             device = await SerialDevice.FromIdAsync(ControllerId);
             if (device != null)
-            {                
+            {
                 device.WriteTimeout = TimeSpan.FromMilliseconds(500);
                 device.ReadTimeout = TimeSpan.FromMilliseconds(500);
                 device.BaudRate = 9600;
@@ -263,6 +290,8 @@ namespace Stargazer.ViewModels
             }
         }
 
+        public bool HasActiveController { get { return device != null; } }
+
         #endregion
 
         #region Video Capture
@@ -315,11 +344,58 @@ namespace Stargazer.ViewModels
             get { return _MediaCapture; }
             set { SetProperty(ref _MediaCapture, value); }
         }
+
+        ToggleRecordingCommand _ToggleRecordingCommand;
+        public ToggleRecordingCommand ToggleRecordingCommand
+        {
+            get
+            {
+                if (_ToggleRecordingCommand == null) _ToggleRecordingCommand = new ToggleRecordingCommand(this);
+                return _ToggleRecordingCommand;
+            }
+        }
+
+        internal async Task ToggleRecording()
+        {
+            if (Recording)
+            {
+                await MediaCapture.StopRecordAsync();
+                Recording = false;
+            }
+            else
+            {
+                var recordFile = await Windows.Storage.KnownFolders.VideosLibrary.CreateFileAsync(string.Format("Stargazer_{0}.mp4", DateTime.Now.ToString("yyyyMMddhhmmss")));
+                MediaCapture.Failed += MediaCapture_Failed;
+                MediaCapture.RecordLimitationExceeded += MediaCapture_RecordLimitationExceeded;
+                await MediaCapture.StartRecordToStorageFileAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Auto), recordFile);
+                Recording = true;
+            }
+        }
+
+        private void MediaCapture_RecordLimitationExceeded(MediaCapture sender)
+        {
+            string s = string.Empty;
+            Recording = false;
+        }
+
+        private void MediaCapture_Failed(MediaCapture sender, MediaCaptureFailedEventArgs errorEventArgs)
+        {
+            string s = string.Empty;
+            Recording = false;
+        }
+
+        private bool _Recording = false;
+        public bool Recording
+        {
+            get { return _Recording; }
+            set
+            {
+                SetProperty(ref _Recording, value);
+            }
+        }
         #endregion
 
         #region Video Playback
-
-
         string _SelectedVideoUrl;
         public string SelectedVideoUrl
         {
@@ -330,7 +406,7 @@ namespace Stargazer.ViewModels
             }
         }
 
-        internal async Task LoadSelectedVideo(string value)
+        internal async Task LoadSelectedVideo()
         {
             var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
             filePicker.FileTypeFilter.Add(".mp4");
@@ -341,36 +417,10 @@ namespace Stargazer.ViewModels
             {
                 var mediaSource = MediaSource.CreateFromStorageFile(file);
 
-                SelectedVideo = new MediaElement { AutoPlay = false };
-                SelectedVideo.MediaOpened += delegate (System.Object sender, RoutedEventArgs e)
-                {
-                    SelectedVideo.Play();
-                };
+                SelectedVideo = new MediaElement { AutoPlay = false, AreTransportControlsEnabled = true, TransportControls = new MediaTransportControls() };
+                IsPlayingVideo = true;
+
                 SelectedVideo.SetPlaybackSource(mediaSource);
-            }
-        }
-
-        internal async Task ShowSettingsScreen()
-        {
-            if (MediaCapture != null)
-            {
-                MediaCapture.Dispose();
-                MediaCapture = null;
-            }
-
-            var sVM = new SettingsViewModel(this);
-            var settings = new ApplicationSettings(sVM);
-            await settings.ShowAsync();
-            await Initialize();
-        }
-
-        ShowSettingsCommand _ShowSettingsScreen;
-        public ShowSettingsCommand ShowSettingsScreenCommand
-        {
-            get
-            {
-                if (_ShowSettingsScreen == null) _ShowSettingsScreen = new ShowSettingsCommand(this);
-                return _ShowSettingsScreen;
             }
         }
 
@@ -380,6 +430,7 @@ namespace Stargazer.ViewModels
             get { return _SelectedVideo; }
             set { SetProperty(ref _SelectedVideo, value); }
         }
+
 
         private SelectVideoPlaybackCommand _SelectVideoPlaybackSource;
         public SelectVideoPlaybackCommand SelectVideoPlaybackSource
@@ -392,9 +443,30 @@ namespace Stargazer.ViewModels
             }
         }
 
-        public bool HasActiveController { get { return device != null; } }
-        public bool Recording { get; internal set; }
-
+        private bool _IsPlayingVideo = false;
+        public bool IsPlayingVideo
+        {
+            get { return _IsPlayingVideo; }
+            set
+            {
+                SetProperty(ref _IsPlayingVideo, value);
+            }
+        }
         #endregion
+
+        ReturnToLiveVideoCommand _ReturnToLiveVideoCommand;
+        public ReturnToLiveVideoCommand ReturnToLiveVideoCommand
+        {
+            get
+            {
+                if (_ReturnToLiveVideoCommand == null) _ReturnToLiveVideoCommand = new ReturnToLiveVideoCommand(this);
+                return _ReturnToLiveVideoCommand;
+            }
+        }
+
+        internal void GoToLiveVideo()
+        {
+            IsPlayingVideo = false;
+        }
     }
 }

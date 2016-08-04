@@ -24,6 +24,28 @@ namespace Stargazer.Models
             await _parent.ToggleLight();
         }
     }
+
+    public class ToggleRecordingCommand : ICommand
+    {
+        private MainPageViewModel _parent;
+        public ToggleRecordingCommand(MainPageViewModel parent)
+        {
+            _parent = parent;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public async void Execute(object parameter)
+        {
+            await _parent.ToggleRecording();
+        }
+    }
+
     public class ShowSettingsCommand : ICommand
     {
         private MainPageViewModel _parent;
@@ -62,7 +84,28 @@ namespace Stargazer.Models
 
         public async void Execute(object parameter)
         {
-            await _parent.LoadSelectedVideo(parameter.ToString());
+            await _parent.LoadSelectedVideo();
+        }
+    }
+
+    public class ReturnToLiveVideoCommand : ICommand
+    {
+        private MainPageViewModel _parent;
+        public ReturnToLiveVideoCommand(MainPageViewModel parent)
+        {
+            _parent = parent;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            _parent.GoToLiveVideo();
         }
     }
 
