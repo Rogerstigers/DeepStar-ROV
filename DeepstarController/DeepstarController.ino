@@ -45,10 +45,10 @@ void processNewData() {
 			RunMotor(2, 255, 1);
 		}
 		if (strcmp(receivedChars, "ASCEND") == 0) {
-			RunMotor(3, 255, 0);
+			RunMotor(3, 255, 1);
 		}
 		if (strcmp(receivedChars, "DIVE") == 0) {
-			RunMotor(3, 255, 1);
+			RunMotor(3, 255, 0);
 		}
 		if (strcmp(receivedChars, "AHEAD") == 0) {
 			RunMotor(1, 255, 1);
@@ -58,6 +58,24 @@ void processNewData() {
 			RunMotor(1, 255, 0);
 			RunMotor(2, 255, 0);
 		}
+    if (strcmp(receivedChars, "PORTFORWARDTEST") == 0) {
+      RunMotor(1, 255, 1);
+    }
+    if (strcmp(receivedChars, "PORTREVERSETEST") == 0) {
+      RunMotor(1, 255, 0);
+    }
+    if (strcmp(receivedChars, "STARBOARDFORWARDTEST") == 0) {
+      RunMotor(2, 255, 1);
+    }
+    if (strcmp(receivedChars, "STARBOARDREVERSETEST") == 0) {
+      RunMotor(2, 255, 0);
+    }
+    if (strcmp(receivedChars, "VERTICALFORWARDTEST") == 0) {
+      RunMotor(3, 255, 1);
+    }
+    if (strcmp(receivedChars, "VERTICALREVERSETEST") == 0) {
+      RunMotor(3, 255, 0);
+    }
 	}
 }
 

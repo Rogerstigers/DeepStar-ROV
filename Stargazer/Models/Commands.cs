@@ -4,6 +4,26 @@ using System.Windows.Input;
 
 namespace Stargazer.Models
 {
+    public class MotorTestCommand : ICommand
+    {
+        private MainPageViewModel _parent;
+        public MotorTestCommand(MainPageViewModel parent)
+        {
+            _parent = parent;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public async void Execute(object parameter)
+        {
+            await _parent.MotorTest();
+        }
+    }
     public class ToggleLightCommand : ICommand
     {
         private MainPageViewModel _parent;
@@ -43,6 +63,27 @@ namespace Stargazer.Models
         public async void Execute(object parameter)
         {
             await _parent.ToggleRecording();
+        }
+    }
+
+    public class PublishToYouTubeCommand : ICommand
+    {
+        private MainPageViewModel _parent;
+        public PublishToYouTubeCommand(MainPageViewModel parent)
+        {
+            _parent = parent;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public async void Execute(object parameter)
+        {
+            await _parent.PublishToYouTube();
         }
     }
 

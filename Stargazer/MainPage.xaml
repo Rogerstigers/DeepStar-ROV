@@ -24,7 +24,8 @@
                 Command="{x:Bind VM.ToggleRecordingCommand}" />
             <AppBarButton
                 Icon="Repair"
-                Label="Motor Test" />
+                Label="Motor Test"
+                Command="{x:Bind VM.MotorTestCommand}" />
             <AppBarSeparator />
             <AppBarToggleButton
                 Icon="SolidStar"
@@ -41,7 +42,7 @@
             <AppBarButton
                 Icon="OpenFile"
                 Label="Load Video"
-                Command="{x:Bind VM.SelectVideoPlaybackSource}"/>
+                Command="{x:Bind VM.SelectVideoPlaybackSource}" />
             <AppBarButton
                 Icon="Video"
                 Label="Go to Live Video"

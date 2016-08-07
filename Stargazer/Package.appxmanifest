@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="fd19ec78-bf41-4620-b05c-2107c43d33f8" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Stargazer</DisplayName>
-    <PublisherDisplayName>Chris</PublisherDisplayName>
+    <PublisherDisplayName>Chris Rogers</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -19,6 +19,10 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="landscape" />
+          <uap:Rotation Preference="landscapeFlipped" />
+        </uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>
   </Applications>
@@ -26,6 +30,7 @@
     <Capability Name="internetClient" />
     <uap:Capability Name="videosLibrary" />
     <DeviceCapability Name="webcam" />
+    <DeviceCapability Name="microphone" />
     <DeviceCapability Name="serialcommunication">
       <Device Id="any">
         <Function Type="name:serialPort" />

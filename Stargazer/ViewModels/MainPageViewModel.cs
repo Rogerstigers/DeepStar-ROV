@@ -11,6 +11,7 @@ using Windows.Media.Core;
 using Windows.Media.MediaProperties;
 using Windows.Media.Playback;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -112,6 +113,16 @@ namespace Stargazer.ViewModels
             }
         }
 
+        MotorTestCommand _MotorTestCommand;
+        public MotorTestCommand MotorTestCommand
+        {
+            get
+            {
+                if (_MotorTestCommand == null) _MotorTestCommand = new MotorTestCommand(this);
+                return _MotorTestCommand;
+            }
+        }
+
         private bool LightOn = false;
         internal async Task ToggleLight()
         {
@@ -152,6 +163,29 @@ namespace Stargazer.ViewModels
 
         internal async Task Disengage()
         {
+            await AllStop();
+        }
+
+        internal async Task MotorTest()
+        {
+            await AllStop();
+            await Write("<PORTFORWARDTEST>");
+            await Task.Delay(1000);
+            await AllStop();
+            await Write("<PORTREVERSETEST>");
+            await Task.Delay(1000);
+            await AllStop();
+            await Write("<STARBOARDFORWARDTEST>");
+            await Task.Delay(1000);
+            await AllStop();
+            await Write("<STARBOARDREVERSETEST>");
+            await Task.Delay(1000);
+            await AllStop();
+            await Write("<VERTICALFORWARDTEST>");
+            await Task.Delay(1000);
+            await AllStop();
+            await Write("<VERTICALREVERSETEST>");
+            await Task.Delay(1000);
             await AllStop();
         }
 
@@ -361,10 +395,24 @@ namespace Stargazer.ViewModels
             {
                 await MediaCapture.StopRecordAsync();
                 Recording = false;
+                await SetMediaCapture();
             }
             else
             {
-                var recordFile = await Windows.Storage.KnownFolders.VideosLibrary.CreateFileAsync(string.Format("Stargazer_{0}.mp4", DateTime.Now.ToString("yyyyMMddhhmmss")));
+                var recordFileName = string.Format("Stargazer_{0}.mp4", DateTime.Now.ToString("yyyyMMddhhmmss"));
+                IStorageFile recordFile = null;
+                try
+                {
+                    FolderPicker folderPicker = new FolderPicker();
+                    folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+                    folderPicker.FileTypeFilter.Add("*");
+                    var storageFolder = await folderPicker.PickSingleFolderAsync();
+                    recordFile = await storageFolder.CreateFileAsync(recordFileName, CreationCollisionOption.ReplaceExisting);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
                 MediaCapture.Failed += MediaCapture_Failed;
                 MediaCapture.RecordLimitationExceeded += MediaCapture_RecordLimitationExceeded;
                 await MediaCapture.StartRecordToStorageFileAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Auto), recordFile);
@@ -451,6 +499,21 @@ namespace Stargazer.ViewModels
             {
                 SetProperty(ref _IsPlayingVideo, value);
             }
+        }
+
+        PublishToYouTubeCommand _PublishToYouTubeCommand;
+        public PublishToYouTubeCommand PublishToYouTubeCommand
+        {
+            get
+            {
+                if (_PublishToYouTubeCommand == null) _PublishToYouTubeCommand = new PublishToYouTubeCommand(this);
+                return _PublishToYouTubeCommand;
+            }
+        }
+
+        internal async Task PublishToYouTube()
+        {
+            await Task.Delay(500);
         }
         #endregion
 

@@ -1,8 +1,6 @@
 ﻿{
   "dependencies": {
-    "FontAwesome": "4.6.3",
-    "FontAwesomeDotNet": "1.0.0",
-    "Google.Apis.YouTube.v3": "1.14.1.529",
+    "FontAwesome.UWP": "4.5.0.8",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2"
   },
   "frameworks": {
